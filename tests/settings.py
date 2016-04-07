@@ -38,11 +38,9 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'django.contrib.markup',
 
     'debug_toolbar',
     'knowledge',
-    'south',
     'django_coverage',
     'mock',
 )
@@ -52,7 +50,7 @@ ROOT_URLCONF = 'tests.urls'
 COVERAGE_REPORT_HTML_OUTPUT_DIR = os.path.join(DIRNAME, 'reports').replace('\\','/')
 
 TEMPLATE_DIRS = (
-    os.path.join(DIRNAME, 'templates').replace('\\','/')
+    os.path.join(DIRNAME, 'templates').replace('\\','/'),
 )
 
 LOGIN_REDIRECT_URL = '/admin/'
