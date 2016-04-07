@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load markup %}
+{% load django_markdown %}
 
 {% blocktrans with name=name %}Hello {{ name }},{% endblocktrans %}
 
