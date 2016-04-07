@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
 
+    'django_markdown',
     'debug_toolbar',
     'knowledge',
     'django_coverage',
@@ -52,5 +53,15 @@ COVERAGE_REPORT_HTML_OUTPUT_DIR = os.path.join(DIRNAME, 'reports').replace('\\',
 TEMPLATE_DIRS = (
     os.path.join(DIRNAME, 'templates').replace('\\','/'),
 )
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+        'OPTIONS': {'context_processors': [
+            'django.contrib.auth.context_processors.auth'
+        ]},
+    },
+]
 
 LOGIN_REDIRECT_URL = '/admin/'
