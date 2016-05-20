@@ -36,7 +36,9 @@
         {% for response in responses %}
             <div class="dk-dialog">
                 <div class="the-author gravatar smaller">
-                    <img src="{% get_gravatar response.get_email 40 %}" alt="{{ response.get_name }} gravatar">
+                    {% if response.get_email %}
+                        <img src="{% get_gravatar response.get_email 40 %}" alt="{{ response.get_name }} gravatar">
+                    {% endif %}
                 </div>
                 <div class="the-content gravatar">
                     <h5>{{ response.get_name }}
