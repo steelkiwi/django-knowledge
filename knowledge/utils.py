@@ -54,3 +54,14 @@ def get_module(path):
 
 
 user_model_label = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
+
+
+def user_can_ask_question(user):
+    return settings.KNOWLEDGE_ALLOW_QUESTIONS or user.is_staff or user.is_superuser
+
+
+def get_current_user_questions(request):
+    from knowledge.models import Question
+    if request.user.is_anonymous():
+        return []
+    return Question.objects.can_view(request.user).filter(user=request.user)

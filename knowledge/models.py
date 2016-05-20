@@ -45,20 +45,18 @@ class KnowledgeBase(models.Model):
     added = models.DateTimeField(auto_now_add=True)
     lastchanged = models.DateTimeField(auto_now=True)
 
-    user = models.ForeignKey('auth.User' if django.VERSION < (1, 5, 0) else django_settings.AUTH_USER_MODEL, blank=True,
+    user = models.ForeignKey(django_settings.AUTH_USER_MODEL, blank=True,
                              null=True, db_index=True)
     alert = models.BooleanField(default=settings.ALERTS,
-        verbose_name=_('Alert'),
-        help_text=_('Check this if you want to be alerted when a new'
-                        ' response is added.'))
-
-    # for anonymous posting, if permitted
-    name = models.CharField(max_length=64, blank=True, null=True,
-        verbose_name=_('Name'),
-        help_text=_('Enter your first and last name.'))
+                                verbose_name=_('Alert'),
+                                help_text=_('Check this if you want to be alerted when a new'
+                                            ' response is added.'))
+    name = models.CharField(max_length=64, blank=True,
+                            default='', verbose_name=_('Name'),
+                            help_text=_('Enter your first and last name.'))
     email = models.EmailField(blank=True, null=True,
-        verbose_name=_('Email'),
-        help_text=_('Enter a valid email address.'))
+                              verbose_name=_('Email'),
+                              help_text=_('Enter a valid email address.'))
 
     class Meta:
         abstract = True
@@ -74,29 +72,34 @@ class KnowledgeBase(models.Model):
 
         super(KnowledgeBase, self).save(*args, **kwargs)
 
-    #########################
-    #### GENERIC GETTERS ####
-    #########################
-
     def get_name(self):
         """
         Get local name, then self.user's first/last, and finally
         their username if all else fails.
         """
-        name = (self.name or (self.user and (
-            u'{0} {1}'.format(self.user.first_name, self.user.last_name).strip()\
-            or self.user.username
-        )))
-        return name.strip() or _("Anonymous")
+        name = self.name
+        if not name and self.user:
+            name = u'{0} {1}'.format(self.user.first_name, self.user.last_name).strip() or self.user.username
 
-    get_email = lambda s: s.email or (s.user and s.user.email)
-    get_pair = lambda s: (s.get_name(), s.get_email())
-    get_user_or_pair = lambda s: s.user or s.get_pair()
+        if not name.strip():
+            name = django_settings.KNOWLEDGE_DEFAULT_NAME
 
-    ########################
-    #### STATUS METHODS ####
-    ########################
+        return name
 
+    def get_email(self):
+        if self.email:
+            return self.email
+        if self.user and self.user.email:
+            return self.user.email
+        return None
+
+    def get_pair(self):
+        return self.get_name(), self.get_email()
+
+    def get_user_or_pair(self):
+        return self.user or self.get_pair()
+
+    # status methods
     def can_view(self, user):
         """
         Returns a boolean dictating if a User like instance can
